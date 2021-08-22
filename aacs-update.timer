@@ -1,0 +1,11 @@
+[Unit]
+Description=Update AACS KEYDB.cfg
+
+[Timer]
+OnCalendar=weekly
+OnCalendar=Fri 20:00
+Persistant=true
+Unit=aacs-update.service
+
+[Install]
+WantedBy=timers.target
