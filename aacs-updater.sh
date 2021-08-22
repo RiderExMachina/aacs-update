@@ -9,7 +9,7 @@ unzip /tmp/aacs.zip -d /tmp
 
 for USER in $(ls /home); do
 	if [ -d "/home/$USER/.config/aacs" ]; then
-		if [ $(getent passwd $USER >/dev/null) -eq 0)					
+		if [ $(getent passwd $USER >/dev/null) ]; then					
 			cp /tmp/keydb.cfg "/home/$USER/.config/aacs/KEYDB.cfg"
 			chown -R "$USER":"$USER" "/home/$USER/.config/aacs/"
 		fi
