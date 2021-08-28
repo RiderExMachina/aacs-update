@@ -12,7 +12,10 @@ if [[ ! type unzip ]]; then
 	echo "Please install the unzip package"
 	exit 1
 fi
-cp aacs-updater.sh /opt/
+if [[ ! -d /opt/aacs-updater ]]; then
+	mkdir -p /opt/aacs-updater
+fi
+cp aacs-updater.sh /opt/aacs-updater
 cp aacs-update.service /etc/systemd/system/
 cp aacs-update.timer /etc/systemd/system/
 
