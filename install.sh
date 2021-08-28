@@ -16,7 +16,7 @@ cp aacs-updater.sh /opt/
 cp aacs-update.service /etc/systemd/system/
 cp aacs-update.timer /etc/systemd/system/
 
-systemctl enable aacs-update.service
+systemctl enable aacs-update.timer
 systemctl start aacs-update.service
 
 if [[!$ -ne 0]]; then
