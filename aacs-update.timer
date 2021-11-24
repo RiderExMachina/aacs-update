@@ -4,7 +4,7 @@ Description=Update AACS KEYDB.cfg
 [Timer]
 OnCalendar=weekly
 OnCalendar=Fri 20:00
-Persistant=true
+Persistent=true
 Unit=aacs-update.service
 
 [Install]
