@@ -3,7 +3,7 @@ Description=Download and install AACS KEYDB.cfg
 
 [Service]
 Type=simple
-ExecStart=/opt/aacs_updater/aacs_updater.sh
+ExecStart=/opt/aacs_updater/aacs-updater.sh
 
 [Install]
 Alias=aacs.service
