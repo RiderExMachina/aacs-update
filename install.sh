@@ -13,15 +13,11 @@ if [[ ! type unzip ]]; then
 	exit 1
 fi
 if [[ ! -d /opt/aacs-updater ]]; then
-	mkdir -p /opt/aacs-updater
+	mkdir -p /opt/aacs_updater
 fi
-cp aacs-updater.sh /opt/aacs-updater
+cp aacs-updater.sh /opt/aacs_updater
 cp aacs-update.service /etc/systemd/system/
 cp aacs-update.timer /etc/systemd/system/
 
 systemctl enable aacs-update.timer
 systemctl start aacs-update.service
-
-if [[!$ -ne 0]]; then
-	echo "Something went wrong. Please create a pull request with the information from 'systemctl status aacs-update'"
-fi
