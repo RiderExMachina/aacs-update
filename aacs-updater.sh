@@ -1,20 +1,42 @@
 #!/bin/bash
+set -euo pipefail
 
 LOGFILE="/var/log/aacs-updater.log"
 
+log() {
+	echo "$1"
+    echo "$(date -u) - $1" >> "$LOGFILE"
+}
 
-echo "$(date -u) - Starting AACS update" >> $LOGFILE
-wget "http://fvonline-db.bplaced.net/fv_download.php?lang=eng" -O /tmp/aacs.zip
-unzip /tmp/aacs.zip -d /tmp
+TMP_ZIP="/tmp/aacs.zip"
+TMP_CFG="/tmp/keydb.cfg"
 
-for USER in $(ls /home); do
-	if [ -d "/home/$USER/.config/aacs" ]; then
-		if [ $(getent passwd $USER >/dev/null) ]; then					
-			cp /tmp/keydb.cfg "/home/$USER/.config/aacs/KEYDB.cfg"
-			chown -R "$USER":"$USER" "/home/$USER/.config/aacs/"
-		fi
-	fi
+log "Starting AACS update"
+
+if ! wget "http://fvonline-db.bplaced.net/export/keydb_eng.zip" -O "$TMP_ZIP"; then
+    log "ERROR: Failed to download AACS keys"
+    exit 1
+fi
+
+if ! unzip "$TMP_ZIP" -d /tmp; then
+    log "ERROR: Failed to unzip AACS keys"
+    exit 1
+fi
+
+if [ ! -f "$TMP_CFG" ]; then
+    log "ERROR: keydb.cfg not found"
+    exit 1
+fi
+
+getent passwd | while IFS=: read -r USERNAME _ _ _ _ HOMEDIR _; do
+    CONFIG_DIR="$HOMEDIR/.config/aacs"
+    if [ -d "$CONFIG_DIR" ]; then
+        [ -f "$CONFIG_DIR/KEYDB.cfg" ] && cp "$CONFIG_DIR/KEYDB.cfg" "$CONFIG_DIR/KEYDB.cfg.bak"
+        cp "$TMP_CFG" "$CONFIG_DIR/KEYDB.cfg"
+        chown "$USERNAME":"$USERNAME" "$CONFIG_DIR/KEYDB.cfg"
+        log "Updated KEYDB.cfg for $USERNAME"
+    fi
 done
 
-echo "$(date -u) - Cleaning up" >> $LOGFILE
-rm /tmp/aacs.zip /tmp/keydb.cfg
+log "Cleaning up"
+rm -f "$TMP_ZIP" "$TMP_CFG"
