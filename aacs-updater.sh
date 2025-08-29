@@ -13,7 +13,8 @@ TMP_CFG="/tmp/keydb.cfg"
 
 log "Starting AACS update"
 
-if ! wget "http://fvonline-db.bplaced.net/export/keydb_eng.zip" -O "$TMP_ZIP"; then
+#"http://fvonline-db.bplaced.net/export/keydb_eng.zip"
+if ! wget "http://fvonline-db.bplaced.net/fv_download.php?lang=eng" -O "$TMP_ZIP"; then
     log "ERROR: Failed to download AACS keys"
     exit 1
 fi
@@ -28,14 +29,17 @@ if [ ! -f "$TMP_CFG" ]; then
     exit 1
 fi
 
-getent passwd | while IFS=: read -r USERNAME _ _ _ _ HOMEDIR _; do
+for USERNAME in $(ls /home); do
+    HOMEDIR="/home/$USERNAME"
     CONFIG_DIR="$HOMEDIR/.config/aacs"
-    if [ -d "$CONFIG_DIR" ]; then
-        [ -f "$CONFIG_DIR/KEYDB.cfg" ] && cp "$CONFIG_DIR/KEYDB.cfg" "$CONFIG_DIR/KEYDB.cfg.bak"
-        cp "$TMP_CFG" "$CONFIG_DIR/KEYDB.cfg"
-        chown "$USERNAME":"$USERNAME" "$CONFIG_DIR/KEYDB.cfg"
-        log "Updated KEYDB.cfg for $USERNAME"
+    if [ ! -d "$CONFIG_DIR" ]; then
+        log "Creating $CONFIG_DIR"
+        mkdir "$CONFIG_DIR"
     fi
+    cp "$TMP_CFG" "$CONFIG_DIR/KEYDB.cfg"
+    chown "$USERNAME":"$USERNAME" -R "$CONFIG_DIR/"
+    chmod 775 -R "$CONFIG_DIR/"
+    log "Updated KEYDB.cfg for $USERNAME"
 done
 
 log "Cleaning up"
